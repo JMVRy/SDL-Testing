@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Get source files
-sources=( ./src/*.cpp )
+sources=( ./src/**.cpp )
 
 for file in "${sources[@]}"; do
     if [[ ! -f "$file" ]]; then
