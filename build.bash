@@ -13,4 +13,4 @@ for file in "${sources[@]}"; do
 done
 
 # Clang compile
-clang++ -O3 -Wall -Wextra -Werror -std=c++23 "${sources[@]}" -o bin/output.x86_64
+clang++ -O3 -Wall -Wextra -std=c++23 "${sources[@]}" -lSDL3 -o bin/output.x86_64 "$@"
