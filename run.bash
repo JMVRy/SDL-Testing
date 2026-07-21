@@ -14,4 +14,4 @@ if [[ ! -x ./bin/output.x86_64 ]]; then
     fi
 fi
 
-./bin/output.x86_64
+./bin/output.x86_64 "$@"
