@@ -1,58 +1,48 @@
-#define SDL_MAIN_USE_CALLBACKS 1
-
 #include <SDL3/SDL.h>
-#include <SDL3/SDL_main.h>
+#include <SDL3/SDL_error.h>
+#include <SDL3/SDL_events.h>
+#include <SDL3/SDL_init.h>
+#include <SDL3/SDL_oldnames.h>
+#include <SDL3/SDL_pixels.h>
+#include <SDL3/SDL_render.h>
+#include <SDL3/SDL_video.h>
+#include <iostream>
 
-static ::SDL_Window *window = NULL;
-static ::SDL_Renderer *renderer = NULL;
+#include "window.hpp"
 
-::SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
-{
-    ::SDL_SetAppMetadata("Example Renderer Clear", "1.0", "com.example.renderer-clear");
+const uint32_t SCREEN_WIDTH = 640;
+const uint32_t SCREEN_HEIGHT = 480;
 
-    if (!::SDL_Init(SDL_INIT_VIDEO))
-    {
-        ::SDL_Log("Couldn't initialize SDL: %s", ::SDL_GetError());
-        return SDL_APP_FAILURE;
+int main( int argc, char *argv[] ) {
+    // Initialize SDL
+    if ( !SDL_Init( SDL_INIT_VIDEO ) ) {
+        // Error!
+        std::cerr << "[ERROR] SDL could not initialize! " << SDL_GetError()
+                  << '\n';
+        return 1;
     }
 
-    if (!::SDL_CreateWindowAndRenderer("examples/renderer/clear", 640, 480, SDL_WINDOW_RESIZABLE, &window, &renderer))
-    {
-        ::SDL_Log("Couldn't create window/renderer: %s", ::SDL_GetError());
-        return SDL_APP_FAILURE;
+    // SDL initialized, create window
+    auto window = Engine::Window( "SDL Tutorial", SCREEN_WIDTH, SCREEN_HEIGHT,
+                                  SDL_WINDOW_RESIZABLE );
+    ;
+    SDL_SetRenderDrawColor( window.renderer(), 0x00, 0x00, 0x00, 0xFF );
+    SDL_RenderClear( window.renderer() );
+    SDL_RenderPresent( window.renderer() );
+
+    // Poll for quit event to make window stick around
+    SDL_Event e;
+    bool quit = false;
+    while ( !quit ) {
+        while ( SDL_PollEvent( &e ) ) {
+            if ( e.type == SDL_EVENT_QUIT )
+                quit = true;
+        }
     }
 
-    ::SDL_SetRenderLogicalPresentation(renderer, 640, 480, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+    // We escaped the loop, user wants to quit
+    window.~Window();
 
-    return SDL_APP_CONTINUE;
-}
-
-::SDL_AppResult SDL_AppEvent(void *appstate, ::SDL_Event *event)
-{
-    if (event->type == SDL_EVENT_QUIT)
-    {
-        return SDL_APP_SUCCESS;
-    }
-
-    return SDL_APP_CONTINUE;
-}
-
-::SDL_AppResult SDL_AppIterate(void *appstate)
-{
-    const double now = ((double)::SDL_GetTicks()) / 1000.0;
-    const float red = (float)(0.5 + 0.5 * ::SDL_sin(now));
-    const float green = (float)(0.5 + 0.5 * ::SDL_sin(now + SDL_PI_D * 2 / 3));
-    const float blue = (float)(0.5 + 0.5 * ::SDL_sin(now + SDL_PI_D * 4 / 3));
-    ::SDL_SetRenderDrawColorFloat(renderer, red, green, blue, SDL_ALPHA_OPAQUE_FLOAT);
-
-    ::SDL_RenderClear(renderer);
-
-    ::SDL_RenderPresent(renderer);
-
-    return SDL_APP_CONTINUE;
-}
-
-void SDL_AppQuit(void *appstate, ::SDL_AppResult result)
-{
-    // ...
+    // Quit SDL
+    SDL_Quit();
 }
