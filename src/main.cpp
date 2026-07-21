@@ -14,6 +14,14 @@ const uint32_t SCREEN_WIDTH = 640;
 const uint32_t SCREEN_HEIGHT = 480;
 
 int main( int argc, char *argv[] ) {
+    std::cout << argc << " arguments: ";
+    for ( int i = 0; i < argc; i++ ) {
+        std::cout << argv[ i ];
+        if ( i < argc - 1 )
+            std::cout << ", ";
+    }
+    std::cout << '\n';
+
     // Initialize SDL
     if ( !SDL_Init( SDL_INIT_VIDEO ) ) {
         // Error!
