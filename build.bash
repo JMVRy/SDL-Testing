@@ -1,16 +1,25 @@
 #!/usr/bin/env bash
 
+if [[ $1 =~ ^-{1,2}([Vv]([Ee][Rr][Bb][Oo][Ss][Ee])?)$ ]]; then
+    VERBOSE=1
+    shift
+fi
+
 # Get source files
 sources=( ./src/**.cpp )
+valid_sources=()
 
 for file in "${sources[@]}"; do
     if [[ ! -f "$file" ]]; then
         # something went wrong with the glob
-        echo "Uh oh, no scripts!" >&2
-        echo "Sources: ${sources[*]}"
-        exit 1
+        echo "File doesn't exist!" >&2
+        echo "File: $file" >&2
+        continue
     fi
+
+    valid_sources+=( "$file" )
 done
 
 # Clang compile
-clang++ -O3 -Wall -Wextra -std=c++23 "${sources[@]}" -lSDL3 -o bin/output.x86_64 "$@"
+[[ $VERBOSE ]] && echo "Command: clang++ -O3 -Wall -Wextra -std=c++23 ${valid_sources[*]} -lSDL3 -o bin/output.x86_64 $*"
+clang++ -O3 -Wall -Wextra -std=c++23 "${valid_sources[@]}" -lSDL3 -o bin/output.x86_64 "$@"
