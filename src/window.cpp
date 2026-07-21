@@ -28,6 +28,8 @@ Engine::Window::~Window() noexcept {
     SDL_DestroyWindow( this->m_window );
 }
 
-const char *Engine::Window::title() { return this->m_title; }
-SDL_Window *Engine::Window::window() { return this->m_window; }
-SDL_Renderer *Engine::Window::renderer() { return this->m_renderer; }
+const char *Engine::Window::title() const noexcept { return this->m_title; }
+SDL_Window *Engine::Window::window() const noexcept { return this->m_window; }
+SDL_Renderer *Engine::Window::renderer() const noexcept {
+    return this->m_renderer;
+}

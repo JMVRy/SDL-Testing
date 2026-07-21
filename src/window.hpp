@@ -17,9 +17,9 @@ class Window {
             SDL_WindowFlags flags ) noexcept( false );
     ~Window() noexcept;
 
-    const char *title();
-    SDL_Window *window();
-    SDL_Renderer *renderer();
+    const char *title() const noexcept;
+    SDL_Window *window() const noexcept;
+    SDL_Renderer *renderer() const noexcept;
 
   private:
     const char *m_title = nullptr;
