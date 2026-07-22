@@ -34,7 +34,7 @@ int main( int argc, char *argv[] ) {
     auto window = Engine::Window( "SDL Tutorial", SCREEN_WIDTH, SCREEN_HEIGHT,
                                   SDL_WINDOW_RESIZABLE );
 
-    SDL_SetRenderDrawColor( window.renderer(), 0x00, 0x00, 0x00, 0xFF );
+    SDL_SetRenderDrawColor( window.renderer(), 0xAA, 0xDD, 0xBB, 0xFF );
     SDL_RenderClear( window.renderer() );
     SDL_RenderPresent( window.renderer() );
 
