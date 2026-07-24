@@ -44,10 +44,9 @@ void close();
 
 int main( int argc, char *argv[] ) {
     std::cout << "SDL-Testing  Copyright (c) 2026  JMVRy\n";
-    std::cout << "SDL-Testing comes with ABSOLUTELY NO WARRANTY\n";
+    std::cout << "SDL-Testing comes with ABSOLUTELY NO WARRANTY.\n";
     std::cout << "SDL-Testing is free software, and you are welcome to "
-                 "redistribute it\n";
-    std::cout << "under certain conditions.\n";
+                 "redistribute it under certain conditions.\n";
     std::cout << "See <https://www.gnu.org/licenses/> for more information.\n";
 
     std::cout << argc << " arguments: ";
@@ -110,14 +109,22 @@ bool init() {
     return true;
 }
 
-bool loadMedia() {
-    const char *path = "img/hello_world.bmp";
-    gHelloWorld = IMG_LoadTexture( gWindow->renderer(), path );
-    if ( gHelloWorld == nullptr ) {
+SDL_Texture *loadTexture( const char *path ) {
+    SDL_Texture *texture = IMG_LoadTexture( gWindow->renderer(), path );
+    if ( texture == nullptr ) {
         std::cerr << "Failed to load texture into renderer! SDL_Error: "
                   << SDL_GetError() << '\n';
-        return false;
+
+        return gWindow->nullTexture();
     }
+
+    return texture;
+}
+
+bool loadMedia() {
+    const char *path = "img/hello_world.bmp";
+
+    gHelloWorld = loadTexture( path );
 
     return true;
 }

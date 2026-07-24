@@ -17,6 +17,7 @@
 
 #include "window.hpp"
 #include <SDL3/SDL_error.h>
+#include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_video.h>
@@ -36,6 +37,43 @@ Engine::Window::Window( const char *title, int width, int height,
         str << SDL_GetError();
         throw Engine::WindowError( str.str().c_str() );
     }
+
+    SDL_Surface *nullTextureSurf =
+        SDL_CreateSurface( 2, 2, SDL_PIXELFORMAT_RGBA8888 );
+    if ( nullTextureSurf == nullptr ) {
+        std::stringstream str( "Could not create null texture! SDL_Error: " );
+        str << SDL_GetError();
+        throw Engine::WindowError( str.str().c_str() );
+    }
+
+    bool locked = SDL_LockSurface( nullTextureSurf );
+    if ( !locked ) {
+        std::stringstream str( "Could not lock null texture! SDL_Error: " );
+        str << SDL_GetError();
+        throw Engine::WindowError( str.str().c_str() );
+    }
+
+    if ( nullTextureSurf->pixels == nullptr ) {
+        throw Engine::WindowError( "Pixels are null on null texture!" );
+    }
+    nullTextureSurf->pixels = new uint32_t[ sizeof( uint32_t ) * 4 ]{
+        0xFF00FFFFU, 0x000000FFU, 0x000000FFU, 0xFF00FFFFU };
+    if ( nullTextureSurf->pixels == nullptr ) {
+        std::stringstream str(
+            "Pixels not written to null texture! SDL_Error: " );
+        str << SDL_GetError();
+        throw Engine::WindowError( str.str().c_str() );
+    }
+    SDL_UnlockSurface( nullTextureSurf );
+
+    this->m_nullTexture =
+        SDL_CreateTextureFromSurface( this->m_renderer, nullTextureSurf );
+    if ( this->m_nullTexture == nullptr ) {
+        std::stringstream str(
+            "Could not create null texture from surface! SDL_Error: " );
+        str << SDL_GetError();
+        throw Engine::WindowError( str.str().c_str() );
+    }
 }
 
 Engine::Window::Window() noexcept( false ) {}
@@ -49,4 +87,7 @@ const char *Engine::Window::title() const noexcept { return this->m_title; }
 SDL_Window *Engine::Window::window() const noexcept { return this->m_window; }
 SDL_Renderer *Engine::Window::renderer() const noexcept {
     return this->m_renderer;
+}
+SDL_Texture *Engine::Window::nullTexture() const noexcept {
+    return this->m_nullTexture;
 }

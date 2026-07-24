@@ -37,10 +37,12 @@ class Window {
     const char *title() const noexcept;
     SDL_Window *window() const noexcept;
     SDL_Renderer *renderer() const noexcept;
+    SDL_Texture *nullTexture() const noexcept;
 
   private:
     const char *m_title = nullptr;
     SDL_Window *m_window = nullptr;
     SDL_Renderer *m_renderer = nullptr;
+    SDL_Texture *m_nullTexture = nullptr;
 };
 } // namespace Engine
