@@ -21,7 +21,7 @@ Engine::Window::Window( const char *title, int width, int height,
     }
 }
 
-Engine::Window::Window() {}
+Engine::Window::Window() noexcept( false ) {}
 
 Engine::Window::~Window() noexcept {
     SDL_DestroyRenderer( this->m_renderer );
