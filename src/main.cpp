@@ -43,6 +43,13 @@ bool loadMedia();
 void close();
 
 int main( int argc, char *argv[] ) {
+    std::cout << "SDL-Testing  Copyright (c) 2026  JMVRy\n";
+    std::cout << "SDL-Testing comes with ABSOLUTELY NO WARRANTY\n";
+    std::cout << "SDL-Testing is free software, and you are welcome to "
+                 "redistribute it\n";
+    std::cout << "under certain conditions.\n";
+    std::cout << "See <https://www.gnu.org/licenses/> for more information.\n";
+
     std::cout << argc << " arguments: ";
     for ( int i = 0; i < argc; i++ ) {
         std::cout << argv[ i ];
