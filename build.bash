@@ -22,4 +22,4 @@ done
 
 # Clang compile
 [[ $VERBOSE ]] && echo "Command: clang++ -O3 -Wall -Wextra -std=c++23 ${valid_sources[*]} -lSDL3 -o bin/output.x86_64 $*"
-clang++ -O3 -Wall -Wextra -std=c++23 "${valid_sources[@]}" -lSDL3 -o bin/output.x86_64 "$@"
+clang++ -O3 -Wall -Wextra -std=c++23 "${valid_sources[@]}" -lSDL3 -lSDL3_image -o bin/output.x86_64 "$@"
