@@ -11,7 +11,7 @@ You will need [Clang](https://clang.llvm.org) and [Bash](https://www.gnu.org/sof
 the `build.bash` script, but you can build it yourself if you know how.
 
 You will also need [`SDL3`](https://wiki.libsdl.org/SDL3/FrontPage) and
-[`SDL3_image`](https://wiki.libsdl.org/SDL3_image/FrontPage). If you don't knowhow to link them to
+[`SDL3_image`](https://wiki.libsdl.org/SDL3_image/FrontPage). If you don't know how to link them to
 your binary when building, you may need to utilize a search engine.
 
 ## Support
