@@ -7,11 +7,12 @@ Install from [the Releases tab](https://github.com/JMVRy/SDL-Testing/releases) o
 manually building it yourself.
 
 ## Build Requirements
-You will need Clang and Bash to use the `build.bash` script, but you can build it
-yourself if you know how.
+You will need [Clang](https://clang.llvm.org) and [Bash](https://www.gnu.org/software/bash/) to use
+the `build.bash` script, but you can build it yourself if you know how.
 
-You will also need SDL3 and SDL3_image. If you don't know how to link them to your
-binary when building, you may need to utilize a search engine.
+You will also need [`SDL3`](https://wiki.libsdl.org/SDL3/FrontPage) and
+[`SDL3_image`](https://wiki.libsdl.org/SDL3_image/FrontPage). If you don't knowhow to link them to
+your binary when building, you may need to utilize a search engine.
 
 ## Support
 [Create an issue](https://github.com/JMVRy/SDL-Testing/issues) describing your problem
