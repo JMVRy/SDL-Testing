@@ -24,4 +24,4 @@ You can also [create an issue](https://github.com/JMVRy/SDL-Testing/issues) with
 feature request, although that may take longer to resolve than a pull request.
 
 ## License
-This project is licensed under `GNU-AGPL-3.0-or-later`.
+This project is licensed under [`GNU-AGPL-3.0-or-later`](https://www.gnu.org/licenses/agpl-3.0.en.html).
