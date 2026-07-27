@@ -24,6 +24,7 @@
 #include <SDL3/SDL_surface.h>
 #include <SDL3/SDL_video.h>
 
+#include "texture.hpp"
 #include "window.hpp"
 
 Engine::Window::Window( const char *title, int width, int height,
@@ -68,14 +69,15 @@ Engine::Window::Window( const char *title, int width, int height,
     }
     SDL_UnlockSurface( nullTextureSurf );
 
-    this->m_nullTexture =
+    SDL_Texture *nullTexture =
         SDL_CreateTextureFromSurface( this->m_renderer, nullTextureSurf );
-    if ( this->m_nullTexture == nullptr ) {
+    if ( nullTexture == nullptr ) {
         std::stringstream str(
             "Could not create null texture from surface! SDL_Error: " );
         str << SDL_GetError();
         throw Engine::WindowError( str.str().c_str() );
     }
+    this->m_nullTexture = Engine::Texture( nullTexture );
 }
 
 Engine::Window::Window() noexcept( false ) {}
@@ -90,20 +92,20 @@ Engine::Window &Engine::Window::operator=( Window &&other ) noexcept {
     if ( this == &other )
         return *this;
 
-    SDL_DestroyTexture( this->m_nullTexture );
+    this->m_nullTexture = std::move( other.m_nullTexture );
+
     SDL_DestroyRenderer( this->m_renderer );
     SDL_DestroyWindow( this->m_window );
 
     this->m_title = std::exchange( other.m_title, nullptr );
     this->m_window = std::exchange( other.m_window, nullptr );
     this->m_renderer = std::exchange( other.m_renderer, nullptr );
-    this->m_nullTexture = std::exchange( other.m_nullTexture, nullptr );
 
     return *this;
 }
 
 Engine::Window::~Window() noexcept {
-    SDL_DestroyTexture( this->m_nullTexture );
+    // SDL_DestroyTexture( this->m_nullTexture );
     SDL_DestroyRenderer( this->m_renderer );
     SDL_DestroyWindow( this->m_window );
 }
@@ -113,6 +115,6 @@ SDL_Window *Engine::Window::window() const noexcept { return this->m_window; }
 SDL_Renderer *Engine::Window::renderer() const noexcept {
     return this->m_renderer;
 }
-SDL_Texture *Engine::Window::nullTexture() const noexcept {
+const Engine::Texture &Engine::Window::nullTexture() const noexcept {
     return this->m_nullTexture;
 }

@@ -120,15 +120,9 @@ bool loadMedia() {
 }
 
 void close() {
-    // Destroy image texture
-    // SDL_DestroyTexture( gHelloWorld );
-    // The destructor already handles destroying the texture, so the texture
-    // will be destroyed automatically when closing the program
-
-    // Remove window
-    // delete gWindow;
-    // The destructor already handles removing the window, so the window will
-    // be destroyed automatically when closing the program
+    // Release SDL resources while SDL is still initialized.
+    gHelloWorld.~Texture();
+    gWindow.~Window();
 
     // Quit SDL
     SDL_Quit();

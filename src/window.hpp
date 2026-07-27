@@ -22,6 +22,8 @@
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_video.h>
 
+#include "texture.hpp"
+
 namespace Engine {
 class WindowError : public std::runtime_error {
   public:
@@ -42,12 +44,12 @@ class Window {
     const char *title() const noexcept;
     SDL_Window *window() const noexcept;
     SDL_Renderer *renderer() const noexcept;
-    SDL_Texture *nullTexture() const noexcept;
+    const Engine::Texture &nullTexture() const noexcept;
 
   private:
     const char *m_title = nullptr;
     SDL_Window *m_window = nullptr;
     SDL_Renderer *m_renderer = nullptr;
-    SDL_Texture *m_nullTexture = nullptr;
+    Engine::Texture m_nullTexture;
 };
 } // namespace Engine

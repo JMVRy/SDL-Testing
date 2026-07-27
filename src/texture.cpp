@@ -26,7 +26,13 @@
 #include "texture.hpp"
 
 Engine::Texture::Texture( SDL_Texture *texture ) noexcept
-    : m_texture( texture ), m_width( texture->w ), m_height( texture->h ) {}
+    : m_texture( texture ) {
+    float width = 0.0f;
+    float height = 0.0f;
+    SDL_GetTextureSize( texture, &width, &height );
+    this->m_width = static_cast<uint32_t>( width );
+    this->m_height = static_cast<uint32_t>( height );
+}
 
 Engine::Texture::Texture( std::string path, SDL_Renderer *renderer ) {
     bool loaded = this->LoadNewTexture( path, renderer );
@@ -70,8 +76,11 @@ bool Engine::Texture::LoadNewTexture(
     }
 
     this->m_texture = texture;
-    this->m_width = texture->w;
-    this->m_height = texture->h;
+    float width = 0.0f;
+    float height = 0.0f;
+    SDL_GetTextureSize( texture, &width, &height );
+    this->m_width = static_cast<uint32_t>( width );
+    this->m_height = static_cast<uint32_t>( height );
     return true;
 }
 
