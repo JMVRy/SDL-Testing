@@ -37,7 +37,7 @@ Engine::Texture::Texture( SDL_Texture *texture ) noexcept
 Engine::Texture::Texture( std::string path, SDL_Renderer *renderer ) {
     bool loaded = this->LoadNewTexture( path, renderer );
     if ( !loaded ) {
-        throw Engine::TextureError( "Failed to create texture!" );
+        throw Engine::TextureError( "Failed to load texture!" );
     }
 }
 
@@ -63,8 +63,8 @@ Engine::Texture &Engine::Texture::operator=( Texture &&other ) noexcept {
 
 Engine::Texture::~Texture() noexcept { SDL_DestroyTexture( this->m_texture ); }
 
-bool Engine::Texture::LoadNewTexture(
-    std::string path, SDL_Renderer *renderer ) noexcept( false ) {
+bool Engine::Texture::LoadNewTexture( std::string path,
+                                      SDL_Renderer *renderer ) noexcept {
     if ( this->m_texture != nullptr )
         SDL_DestroyTexture( this->m_texture );
 

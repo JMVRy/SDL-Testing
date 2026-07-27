@@ -119,11 +119,17 @@ bool init() {
 }
 
 bool loadMedia() {
+    bool success = true;
     const char *path = "img/hello_world.bmp";
 
-    gHelloWorld = Engine::Texture( path, gWindow.renderer() );
+    try {
+        gHelloWorld = Engine::Texture( path, gWindow.renderer() );
+    } catch ( Engine::TextureError &err ) {
+        std::cerr << "gHelloWorld texture failed: " << err.what() << '\n';
+        success = false;
+    }
 
-    return true;
+    return success;
 }
 
 void close() {

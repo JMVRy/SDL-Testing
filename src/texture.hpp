@@ -40,8 +40,7 @@ class Texture {
     Texture &operator=( Texture &&other ) noexcept;
     ~Texture() noexcept;
 
-    bool LoadNewTexture( std::string path,
-                         SDL_Renderer *renderer ) noexcept( false );
+    bool LoadNewTexture( std::string path, SDL_Renderer *renderer ) noexcept;
     void Render( SDL_Renderer *renderer ) const noexcept;
     void Render( SDL_Renderer *renderer, float x, float y ) const noexcept;
     void Render( SDL_Renderer *renderer, float x, float y, float width,
