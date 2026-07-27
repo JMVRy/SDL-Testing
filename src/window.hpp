@@ -32,6 +32,10 @@ class Window {
     Window() noexcept( false );
     Window( const char *title, int width, int height,
             SDL_WindowFlags flags ) noexcept( false );
+    Window( const Window & ) = delete;
+    Window &operator=( const Window & ) = delete;
+    Window( Window &&other ) noexcept;
+    Window &operator=( Window &&other ) noexcept;
     ~Window() noexcept;
 
     const char *title() const noexcept;

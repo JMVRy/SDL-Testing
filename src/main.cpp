@@ -35,7 +35,7 @@
 const uint32_t SCREEN_WIDTH = 640;
 const uint32_t SCREEN_HEIGHT = 480;
 
-Engine::Window *gWindow = nullptr;
+Engine::Window gWindow;
 SDL_Texture *gHelloWorld = nullptr;
 
 bool init();
@@ -75,13 +75,13 @@ int main( int argc, char *argv[] ) {
         }
 
         // Clear screen
-        SDL_RenderClear( gWindow->renderer() );
+        SDL_RenderClear( gWindow.renderer() );
 
         // Render texture to screen
-        SDL_RenderTexture( gWindow->renderer(), gHelloWorld, nullptr, nullptr );
+        SDL_RenderTexture( gWindow.renderer(), gHelloWorld, nullptr, nullptr );
 
         // Present to screen
-        SDL_RenderPresent( gWindow->renderer() );
+        SDL_RenderPresent( gWindow.renderer() );
     }
 
     close();
@@ -98,8 +98,8 @@ bool init() {
 
     // Create window
     try {
-        gWindow = new Engine::Window( "Render an image Tutorial", SCREEN_WIDTH,
-                                      SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE );
+        gWindow = Engine::Window( "Render an image Tutorial", SCREEN_WIDTH,
+                                  SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE );
     } catch ( Engine::WindowError &error ) {
         std::cerr << "Failed to initialize window!\n";
         std::cerr << error.what() << '\n';
@@ -110,12 +110,12 @@ bool init() {
 }
 
 SDL_Texture *loadTexture( const char *path ) {
-    SDL_Texture *texture = IMG_LoadTexture( gWindow->renderer(), path );
+    SDL_Texture *texture = IMG_LoadTexture( gWindow.renderer(), path );
     if ( texture == nullptr ) {
         std::cerr << "Failed to load texture into renderer! SDL_Error: "
                   << SDL_GetError() << '\n';
 
-        return gWindow->nullTexture();
+        return gWindow.nullTexture();
     }
 
     return texture;
@@ -135,8 +135,9 @@ void close() {
     gHelloWorld = nullptr;
 
     // Remove window
-    delete gWindow;
-    gWindow = nullptr;
+    // delete gWindow;
+    // The deconstructor already handles removing the window, so the window will
+    // be destroyed automatically when closing the program
 
     // Quit SDL
     SDL_Quit();
