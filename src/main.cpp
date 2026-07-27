@@ -30,13 +30,14 @@
 
 #include <SDL3_image/SDL_image.h>
 
+#include "texture.hpp"
 #include "window.hpp"
 
 const uint32_t SCREEN_WIDTH = 640;
 const uint32_t SCREEN_HEIGHT = 480;
 
 Engine::Window gWindow;
-SDL_Texture *gHelloWorld = nullptr;
+Engine::Texture gHelloWorld;
 
 bool init();
 bool loadMedia();
@@ -78,7 +79,8 @@ int main( int argc, char *argv[] ) {
         SDL_RenderClear( gWindow.renderer() );
 
         // Render texture to screen
-        SDL_RenderTexture( gWindow.renderer(), gHelloWorld, nullptr, nullptr );
+        SDL_RenderTexture( gWindow.renderer(), gHelloWorld.texture(), nullptr,
+                           nullptr );
 
         // Present to screen
         SDL_RenderPresent( gWindow.renderer() );
@@ -109,34 +111,23 @@ bool init() {
     return true;
 }
 
-SDL_Texture *loadTexture( const char *path ) {
-    SDL_Texture *texture = IMG_LoadTexture( gWindow.renderer(), path );
-    if ( texture == nullptr ) {
-        std::cerr << "Failed to load texture into renderer! SDL_Error: "
-                  << SDL_GetError() << '\n';
-
-        return gWindow.nullTexture();
-    }
-
-    return texture;
-}
-
 bool loadMedia() {
     const char *path = "img/hello_world.bmp";
 
-    gHelloWorld = loadTexture( path );
+    gHelloWorld = Engine::Texture( path, gWindow.renderer() );
 
     return true;
 }
 
 void close() {
     // Destroy image texture
-    SDL_DestroyTexture( gHelloWorld );
-    gHelloWorld = nullptr;
+    // SDL_DestroyTexture( gHelloWorld );
+    // The destructor already handles destroying the texture, so the texture
+    // will be destroyed automatically when closing the program
 
     // Remove window
     // delete gWindow;
-    // The deconstructor already handles removing the window, so the window will
+    // The destructor already handles removing the window, so the window will
     // be destroyed automatically when closing the program
 
     // Quit SDL

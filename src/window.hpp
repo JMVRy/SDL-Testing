@@ -17,9 +17,10 @@
 
 #pragma once
 
+#include <stdexcept>
+
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_video.h>
-#include <stdexcept>
 
 namespace Engine {
 class WindowError : public std::runtime_error {
