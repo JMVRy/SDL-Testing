@@ -42,7 +42,10 @@ class Texture {
 
     bool LoadNewTexture( std::string path,
                          SDL_Renderer *renderer ) noexcept( false );
-    void Render( int x, int y ) const noexcept;
+    void Render( SDL_Renderer *renderer ) const noexcept;
+    void Render( SDL_Renderer *renderer, float x, float y ) const noexcept;
+    void Render( SDL_Renderer *renderer, float x, float y, float width,
+                 float height ) const noexcept;
 
     SDL_Texture *texture() const noexcept;
     uint32_t width() const noexcept;
@@ -51,7 +54,7 @@ class Texture {
   private:
     SDL_Texture *m_texture = nullptr;
 
-    uint32_t m_width = 0;
-    uint32_t m_height = 0;
+    float m_width = 0;
+    float m_height = 0;
 };
 } // namespace Engine

@@ -33,8 +33,8 @@
 #include "texture.hpp"
 #include "window.hpp"
 
-const uint32_t SCREEN_WIDTH = 640;
-const uint32_t SCREEN_HEIGHT = 480;
+static uint32_t SCREEN_WIDTH = 640;
+static uint32_t SCREEN_HEIGHT = 480;
 
 Engine::Window gWindow;
 Engine::Texture gHelloWorld;
@@ -71,16 +71,23 @@ int main( int argc, char *argv[] ) {
     bool quit = false;
     while ( !quit ) {
         while ( SDL_PollEvent( &e ) ) {
-            if ( e.type == SDL_EVENT_QUIT )
+            switch ( e.type ) {
+            case SDL_EVENT_QUIT:
                 quit = true;
+                break;
+
+            case SDL_EVENT_WINDOW_RESIZED:
+                SCREEN_WIDTH = e.window.data1;
+                SCREEN_HEIGHT = e.window.data2;
+                break;
+            }
         }
 
         // Clear screen
         SDL_RenderClear( gWindow.renderer() );
 
         // Render texture to screen
-        SDL_RenderTexture( gWindow.renderer(), gHelloWorld.texture(), nullptr,
-                           nullptr );
+        gHelloWorld.Render( gWindow.renderer() );
 
         // Present to screen
         SDL_RenderPresent( gWindow.renderer() );
@@ -100,8 +107,8 @@ bool init() {
 
     // Create window
     try {
-        gWindow = Engine::Window( "Render an image Tutorial", SCREEN_WIDTH,
-                                  SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE );
+        gWindow = Engine::Window( "SDL Testing", SCREEN_WIDTH, SCREEN_HEIGHT,
+                                  SDL_WINDOW_RESIZABLE );
     } catch ( Engine::WindowError &error ) {
         std::cerr << "Failed to initialize window!\n";
         std::cerr << error.what() << '\n';

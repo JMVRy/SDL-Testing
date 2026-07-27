@@ -76,12 +76,25 @@ bool Engine::Texture::LoadNewTexture(
     }
 
     this->m_texture = texture;
-    float width = 0.0f;
-    float height = 0.0f;
-    SDL_GetTextureSize( texture, &width, &height );
-    this->m_width = static_cast<uint32_t>( width );
-    this->m_height = static_cast<uint32_t>( height );
+    SDL_GetTextureSize( texture, &this->m_width, &this->m_height );
     return true;
+}
+
+void Engine::Texture::Render( SDL_Renderer *renderer ) const noexcept {
+    SDL_RenderTexture( renderer, this->m_texture, nullptr, nullptr );
+}
+
+void Engine::Texture::Render( SDL_Renderer *renderer, float x,
+                              float y ) const noexcept {
+    SDL_FRect rect = { x, y, static_cast<float>( this->m_width ),
+                       static_cast<float>( this->m_height ) };
+    SDL_RenderTexture( renderer, this->m_texture, nullptr, &rect );
+}
+
+void Engine::Texture::Render( SDL_Renderer *renderer, float x, float y,
+                              float width, float height ) const noexcept {
+    SDL_FRect rect = { x, y, width, height };
+    SDL_RenderTexture( renderer, this->m_texture, nullptr, &rect );
 }
 
 SDL_Texture *Engine::Texture::texture() const noexcept {
