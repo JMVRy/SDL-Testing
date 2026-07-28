@@ -16,12 +16,13 @@
     along with SDL Testing.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
+#include <sstream>
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_error.h>
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
+#include <SDL3/SDL_log.h>
 #include <SDL3/SDL_oldnames.h>
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_render.h>
@@ -44,19 +45,20 @@ bool loadMedia();
 void close();
 
 int main( int argc, char *argv[] ) {
-    std::cout << "SDL-Testing  Copyright (c) 2026  JMVRy\n";
-    std::cout << "SDL-Testing comes with ABSOLUTELY NO WARRANTY.\n";
-    std::cout << "SDL-Testing is free software, and you are welcome to "
-                 "redistribute it under certain conditions.\n";
-    std::cout << "See <https://www.gnu.org/licenses/> for more information.\n";
+    SDL_Log( "SDL-Testing  Copyright (c) 2026  JMVRy" );
+    SDL_Log( "SDL-Testing comes with ABSOLUTELY NO WARRANTY." );
+    SDL_Log( "SDL-Testing is free software, and you are welcome to "
+             "redistribute it under certain conditions." );
+    SDL_Log( "See <https://www.gnu.org/licenses/> for more information." );
 
-    std::cout << argc << " arguments: ";
+    std::stringstream ss;
+    ss << argc << " arguments: ";
     for ( int i = 0; i < argc; i++ ) {
-        std::cout << argv[ i ];
+        ss << argv[ i ];
         if ( i < argc - 1 )
-            std::cout << ", ";
+            ss << ", ";
     }
-    std::cout << '\n';
+    SDL_Log( "%s", ss.str().c_str() );
 
     // Initialize SDL
     if ( !init() )
@@ -87,7 +89,9 @@ int main( int argc, char *argv[] ) {
         SDL_RenderClear( gWindow.renderer() );
 
         // Render texture to screen
-        gHelloWorld.Render( gWindow.renderer() );
+        gHelloWorld.Render( gWindow.renderer(), SCREEN_WIDTH / 4.0f,
+                            SCREEN_HEIGHT / 4.0f, SCREEN_WIDTH / 2.0f,
+                            SCREEN_HEIGHT / 2.0f );
 
         // Present to screen
         SDL_RenderPresent( gWindow.renderer() );
@@ -100,8 +104,9 @@ bool init() {
     // Initialize SDL
     if ( !SDL_Init( SDL_INIT_VIDEO ) ) {
         // Error!
-        std::cerr << "[ERROR] SDL could not initialize! " << SDL_GetError()
-                  << '\n';
+        SDL_LogError( SDL_LOG_CATEGORY_ERROR,
+                      "SDL could not initialize! SDL_Error: %s",
+                      SDL_GetError() );
         return false;
     }
 
@@ -110,8 +115,8 @@ bool init() {
         gWindow = Engine::Window( "SDL Testing", SCREEN_WIDTH, SCREEN_HEIGHT,
                                   SDL_WINDOW_RESIZABLE );
     } catch ( Engine::WindowError &error ) {
-        std::cerr << "Failed to initialize window!\n";
-        std::cerr << error.what() << '\n';
+        SDL_LogError( SDL_LOG_CATEGORY_ERROR, "Failed to initialize window!" );
+        SDL_LogError( SDL_LOG_CATEGORY_ERROR, "%s", error.what() );
         return false;
     }
 
@@ -125,7 +130,8 @@ bool loadMedia() {
     try {
         gHelloWorld = Engine::Texture( path, gWindow.renderer() );
     } catch ( Engine::TextureError &err ) {
-        std::cerr << "gHelloWorld texture failed: " << err.what() << '\n';
+        SDL_LogError( SDL_LOG_CATEGORY_ERROR, "gHelloWorld texture failed: %s",
+                      err.what() );
         success = false;
     }
 
@@ -133,10 +139,8 @@ bool loadMedia() {
 }
 
 void close() {
-    // Release SDL resources while SDL is still initialized.
-    gHelloWorld.~Texture();
-    gWindow.~Window();
+    gHelloWorld = Engine::Texture();
+    gWindow = Engine::Window();
 
-    // Quit SDL
     SDL_Quit();
 }
