@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <memory>
 #include <stdexcept>
 
 #include <SDL3/SDL_render.h>
@@ -32,14 +33,14 @@ class WindowError : public std::runtime_error {
 
 class Window {
   public:
-    Window() noexcept( false );
+    Window() noexcept = default;
     Window( const char *title, int width, int height,
             SDL_WindowFlags flags ) noexcept( false );
     Window( const Window & ) = delete;
     Window &operator=( const Window & ) = delete;
-    Window( Window &&other ) noexcept;
+    Window( Window &&other ) noexcept = default;
     Window &operator=( Window &&other ) noexcept;
-    ~Window() noexcept;
+    ~Window() noexcept = default;
 
     const char *title() const noexcept;
     SDL_Window *window() const noexcept;
@@ -48,8 +49,10 @@ class Window {
 
   private:
     const char *m_title = nullptr;
-    SDL_Window *m_window = nullptr;
-    SDL_Renderer *m_renderer = nullptr;
+    std::unique_ptr<SDL_Window, decltype( &SDL_DestroyWindow )> m_window{
+        nullptr, SDL_DestroyWindow };
+    std::unique_ptr<SDL_Renderer, decltype( &SDL_DestroyRenderer )> m_renderer{
+        nullptr, SDL_DestroyRenderer };
     Engine::Texture m_nullTexture;
 };
 } // namespace Engine

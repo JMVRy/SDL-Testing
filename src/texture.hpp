@@ -18,6 +18,7 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <stdexcept>
 #include <string>
 
@@ -31,14 +32,14 @@ class TextureError : public std::runtime_error {
 
 class Texture {
   public:
-    Texture() noexcept;
+    Texture() noexcept = default;
     Texture( std::string path, SDL_Renderer *renderer ) noexcept( false );
     Texture( SDL_Texture *texture ) noexcept;
     Texture( const Texture & ) = delete;
     Texture &operator=( const Texture & ) = delete;
-    Texture( Texture &&other ) noexcept;
-    Texture &operator=( Texture &&other ) noexcept;
-    ~Texture() noexcept;
+    Texture( Texture &&other ) noexcept = default;
+    Texture &operator=( Texture &&other ) noexcept = default;
+    ~Texture() noexcept = default;
 
     bool LoadNewTexture( std::string path, SDL_Renderer *renderer ) noexcept;
     void Render( SDL_Renderer *renderer ) const noexcept;
@@ -51,7 +52,8 @@ class Texture {
     uint32_t height() const noexcept;
 
   private:
-    SDL_Texture *m_texture = nullptr;
+    std::unique_ptr<SDL_Texture, decltype( &SDL_DestroyTexture )> m_texture{
+        nullptr, SDL_DestroyTexture };
 
     float m_width = 0;
     float m_height = 0;

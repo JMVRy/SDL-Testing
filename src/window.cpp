@@ -15,6 +15,7 @@
     along with SDL Testing.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include <memory>
 #include <sstream>
 #include <utility>
 
@@ -29,11 +30,10 @@
 
 Engine::Window::Window( const char *title, int width, int height,
                         SDL_WindowFlags flags ) noexcept( false ) {
-    using namespace std::string_literals;
-
+    SDL_Window *window = nullptr;
+    SDL_Renderer *renderer = nullptr;
     bool created = SDL_CreateWindowAndRenderer(
-        ( this->m_title = title ), width, height, flags, &this->m_window,
-        &this->m_renderer );
+        ( this->m_title = title ), width, height, flags, &window, &renderer );
     if ( !created ) {
         std::stringstream str(
             "SDL_CreateWindowAndRenderer failed! SDL_Error: " );
@@ -41,15 +41,19 @@ Engine::Window::Window( const char *title, int width, int height,
         throw Engine::WindowError( str.str().c_str() );
     }
 
-    SDL_Surface *nullTextureSurf =
-        SDL_CreateSurface( 2, 2, SDL_PIXELFORMAT_RGBA8888 );
+    this->m_window.reset( window );
+    this->m_renderer.reset( renderer );
+
+    std::unique_ptr<SDL_Surface, decltype( &SDL_DestroySurface )>
+        nullTextureSurf{ SDL_CreateSurface( 2, 2, SDL_PIXELFORMAT_RGBA8888 ),
+                         SDL_DestroySurface };
     if ( nullTextureSurf == nullptr ) {
         std::stringstream str( "Could not create null texture! SDL_Error: " );
         str << SDL_GetError();
         throw Engine::WindowError( str.str().c_str() );
     }
 
-    bool locked = SDL_LockSurface( nullTextureSurf );
+    bool locked = SDL_LockSurface( nullTextureSurf.get() );
     if ( !locked ) {
         std::stringstream str( "Could not lock null texture! SDL_Error: " );
         str << SDL_GetError();
@@ -59,18 +63,15 @@ Engine::Window::Window( const char *title, int width, int height,
     if ( nullTextureSurf->pixels == nullptr ) {
         throw Engine::WindowError( "Pixels are null on null texture!" );
     }
-    nullTextureSurf->pixels =
-        new uint32_t[ 4 ]{ 0xFF00FFFFU, 0x000000FFU, 0x000000FFU, 0xFF00FFFFU };
-    if ( nullTextureSurf->pixels == nullptr ) {
-        std::stringstream str(
-            "Pixels not written to null texture! SDL_Error: " );
-        str << SDL_GetError();
-        throw Engine::WindowError( str.str().c_str() );
-    }
-    SDL_UnlockSurface( nullTextureSurf );
+    auto *pixels = static_cast<uint32_t *>( nullTextureSurf->pixels );
+    pixels[ 0 ] = 0xFF00FFFFU;
+    pixels[ 1 ] = 0x000000FFU;
+    pixels[ 2 ] = 0x000000FFU;
+    pixels[ 3 ] = 0xFF00FFFFU;
+    SDL_UnlockSurface( nullTextureSurf.get() );
 
-    SDL_Texture *nullTexture =
-        SDL_CreateTextureFromSurface( this->m_renderer, nullTextureSurf );
+    SDL_Texture *nullTexture = SDL_CreateTextureFromSurface(
+        this->m_renderer.get(), nullTextureSurf.get() );
     if ( nullTexture == nullptr ) {
         std::stringstream str(
             "Could not create null texture from surface! SDL_Error: " );
@@ -80,40 +81,28 @@ Engine::Window::Window( const char *title, int width, int height,
     this->m_nullTexture = Engine::Texture( nullTexture );
 }
 
-Engine::Window::Window() noexcept( false ) {}
-
-Engine::Window::Window( Window &&other ) noexcept
-    : m_title( std::exchange( other.m_title, nullptr ) ),
-      m_window( std::exchange( other.m_window, nullptr ) ),
-      m_renderer( std::exchange( other.m_renderer, nullptr ) ),
-      m_nullTexture( std::exchange( other.m_nullTexture, nullptr ) ) {}
-
 Engine::Window &Engine::Window::operator=( Window &&other ) noexcept {
     if ( this == &other )
         return *this;
 
     this->m_nullTexture = std::move( other.m_nullTexture );
 
-    SDL_DestroyRenderer( this->m_renderer );
-    SDL_DestroyWindow( this->m_window );
+    this->m_renderer.reset();
+    this->m_window.reset();
 
     this->m_title = std::exchange( other.m_title, nullptr );
-    this->m_window = std::exchange( other.m_window, nullptr );
-    this->m_renderer = std::exchange( other.m_renderer, nullptr );
+    this->m_window = std::move( other.m_window );
+    this->m_renderer = std::move( other.m_renderer );
 
     return *this;
 }
 
-Engine::Window::~Window() noexcept {
-    // SDL_DestroyTexture( this->m_nullTexture );
-    SDL_DestroyRenderer( this->m_renderer );
-    SDL_DestroyWindow( this->m_window );
-}
-
 const char *Engine::Window::title() const noexcept { return this->m_title; }
-SDL_Window *Engine::Window::window() const noexcept { return this->m_window; }
+SDL_Window *Engine::Window::window() const noexcept {
+    return this->m_window.get();
+}
 SDL_Renderer *Engine::Window::renderer() const noexcept {
-    return this->m_renderer;
+    return this->m_renderer.get();
 }
 const Engine::Texture &Engine::Window::nullTexture() const noexcept {
     return this->m_nullTexture;
