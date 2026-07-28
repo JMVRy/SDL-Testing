@@ -20,6 +20,14 @@ if [[ $1 =~ ^-{1,2}([Vv]([Ee][Rr][Bb][Oo][Ss][Ee])?)$ ]]; then
     shift
 fi
 
+if [[ $1 =~ ^-{1,2}([Dd]([Ee][Bb][Uu][Gg])?)$ ]]; then
+    DEBUG=1
+    shift
+elif [[ $1 =~ ^-{1,2}([Rr]([Ee][Ll][Ee][Aa][Ss][Ee])?)$ ]]; then
+    RELEASE=1
+    shift
+fi
+
 # Get source files
 sources=( ./src/**.cpp )
 valid_sources=()
@@ -35,6 +43,12 @@ for file in "${sources[@]}"; do
     valid_sources+=( "$file" )
 done
 
+if [[ $DEBUG ]]; then
+    valid_sources+=( "-O0" )
+elif [[ $RELEASE ]]; then
+    valid_sources+=( "-O3" )
+fi
+
 # Clang compile
-[[ $VERBOSE ]] && echo "Command: clang++ -O3 -Wall -Wextra -std=c++23 ${valid_sources[*]} -lSDL3 -o bin/output.x86_64 $*"
-clang++ -O3 -Wall -Wextra -std=c++23 "${valid_sources[@]}" -lSDL3 -lSDL3_image -o bin/output.x86_64 "$@"
+[[ $VERBOSE ]] && echo "Command: clang++ -Wall -Wextra -std=c++23 ${valid_sources[*]} -lSDL3 -o bin/output.x86_64 $*"
+clang++ -Wall -Wextra -std=c++23 "${valid_sources[@]}" -lSDL3 -lSDL3_image -o bin/output.x86_64 "$@"
