@@ -47,9 +47,11 @@ class Texture {
     void Render( SDL_Renderer *renderer, float x, float y, float width,
                  float height ) const noexcept;
 
-    SDL_Texture *texture() const noexcept;
+    const std::unique_ptr<SDL_Texture, decltype( &SDL_DestroyTexture )> &
+    texture() const noexcept;
     uint32_t width() const noexcept;
     uint32_t height() const noexcept;
+    bool isLoaded() const noexcept;
 
   private:
     std::unique_ptr<SDL_Texture, decltype( &SDL_DestroyTexture )> m_texture{

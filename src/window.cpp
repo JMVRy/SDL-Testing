@@ -98,11 +98,13 @@ Engine::Window &Engine::Window::operator=( Window &&other ) noexcept {
 }
 
 const char *Engine::Window::title() const noexcept { return this->m_title; }
-SDL_Window *Engine::Window::window() const noexcept {
-    return this->m_window.get();
+const std::unique_ptr<SDL_Window, decltype( &SDL_DestroyWindow )> &
+Engine::Window::window() const noexcept {
+    return this->m_window;
 }
-SDL_Renderer *Engine::Window::renderer() const noexcept {
-    return this->m_renderer.get();
+const std::unique_ptr<SDL_Renderer, decltype( &SDL_DestroyRenderer )> &
+Engine::Window::renderer() const noexcept {
+    return this->m_renderer;
 }
 const Engine::Texture &Engine::Window::nullTexture() const noexcept {
     return this->m_nullTexture;

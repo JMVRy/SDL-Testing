@@ -71,8 +71,13 @@ void Engine::Texture::Render( SDL_Renderer *renderer, float x, float y,
     SDL_RenderTexture( renderer, this->m_texture.get(), nullptr, &rect );
 }
 
-SDL_Texture *Engine::Texture::texture() const noexcept {
-    return this->m_texture.get();
+const std::unique_ptr<SDL_Texture, decltype( &SDL_DestroyTexture )> &
+Engine::Texture::texture() const noexcept {
+    return this->m_texture;
 }
 uint32_t Engine::Texture::width() const noexcept { return this->m_width; }
 uint32_t Engine::Texture::height() const noexcept { return this->m_height; }
+
+bool Engine::Texture::isLoaded() const noexcept {
+    return this->m_texture != nullptr;
+}

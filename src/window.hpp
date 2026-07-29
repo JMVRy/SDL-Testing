@@ -43,8 +43,10 @@ class Window {
     ~Window() noexcept = default;
 
     const char *title() const noexcept;
-    SDL_Window *window() const noexcept;
-    SDL_Renderer *renderer() const noexcept;
+    const std::unique_ptr<SDL_Window, decltype( &SDL_DestroyWindow )> &
+    window() const noexcept;
+    const std::unique_ptr<SDL_Renderer, decltype( &SDL_DestroyRenderer )> &
+    renderer() const noexcept;
     const Engine::Texture &nullTexture() const noexcept;
 
   private:

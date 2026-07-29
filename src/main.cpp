@@ -86,15 +86,15 @@ int main( int argc, char *argv[] ) {
         }
 
         // Clear screen
-        SDL_RenderClear( gWindow.renderer() );
+        SDL_RenderClear( gWindow.renderer().get() );
 
         // Render texture to screen
-        gHelloWorld.Render( gWindow.renderer(), SCREEN_WIDTH / 4.0f,
+        gHelloWorld.Render( gWindow.renderer().get(), SCREEN_WIDTH / 4.0f,
                             SCREEN_HEIGHT / 4.0f, SCREEN_WIDTH / 2.0f,
                             SCREEN_HEIGHT / 2.0f );
 
         // Present to screen
-        SDL_RenderPresent( gWindow.renderer() );
+        SDL_RenderPresent( gWindow.renderer().get() );
     }
 
     close();
@@ -128,7 +128,7 @@ bool loadMedia() {
     const char *path = "img/hello_world.bmp";
 
     try {
-        gHelloWorld = Engine::Texture( path, gWindow.renderer() );
+        gHelloWorld = Engine::Texture( path, gWindow.renderer().get() );
     } catch ( Engine::TextureError &err ) {
         SDL_LogError( SDL_LOG_CATEGORY_ERROR, "gHelloWorld texture failed: %s",
                       err.what() );
